@@ -23,7 +23,7 @@ code=$?
 
 echo "`date` backup end" >> $LOGFILE
 
-if [ $code -eq 0 ]; then
+if [ $code -eq 0 -o $code -eq 24 ]; then
     mv $NEWBACKUP~ $NEWBACKUP
 else
     cat $LOGFILE | mail -s "BACKUP NG CODE IS $code" root
