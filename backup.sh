@@ -11,19 +11,20 @@ mkdir -p $BACKUPDIR
 
 LASTBACKUP=`ls -t $BACKUPDIR | grep -v "~" | head -1`
 NEWBACKUP=$BACKUPDIR/`date +%Y%m%dT%H%M%S`
-mkdir $NEWBACKUP~
+TEMPDIR=$NEWBACKUP~$$
+mkdir $TEMPDIR
 
-LOGFILE=$NEWBACKUP~/backup.log;
+LOGFILE=$TEMPDIR/backup.log;
 touch $LOGFILE
 echo "`date` backup start" >> $LOGFILE
 
-rsync -av --delete --link-dest=../$LASTBACKUP $TARGETS $NEWBACKUP~ >> $LOGFILE 2>&1
+rsync -av --delete --link-dest=../$LASTBACKUP $TARGETS $TEMPDIR >> $LOGFILE 2>&1
 code=$?
 
 echo "`date` backup end" >> $LOGFILE
 
 if [ $code -eq 0 -o $code -eq 24 ]; then
-    mv $NEWBACKUP~ $NEWBACKUP
+    mv $TEMPDIR $NEWBACKUP
 else
     cat $LOGFILE | mail -s "BACKUP NG CODE IS $code" root
 fi
