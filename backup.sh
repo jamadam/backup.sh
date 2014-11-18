@@ -14,7 +14,6 @@ NEWBACKUP=$BACKUPDIR/`date +%Y%m%dT%H%M%S`
 mkdir $NEWBACKUP~
 
 LOGFILE=$NEWBACKUP~/backup.log;
-rm -f $LOGFILE
 touch $LOGFILE
 echo "`date` backup start" >> $LOGFILE
 
