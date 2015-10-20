@@ -9,7 +9,7 @@ use lib catdir(dirname(__FILE__), '../lib');
 use lib catdir(dirname(__FILE__), 'lib');
 use Time::Local;
 use Test::More;
-use Test::More tests => 11;
+use Test::More tests => 21;
 
 my $basedir = catdir(dirname(__FILE__), 'bk');
 mkdir $basedir if ! -d $basedir;
@@ -33,7 +33,7 @@ foreach (1..10) {
     utime($ts, $ts, $f);
 }
 
-# test
+# test: basic
 {
     system(catdir(dirname(__FILE__), "../backup.sh $basedir $targetdir"));
     
@@ -48,13 +48,43 @@ foreach (1..10) {
     is $files3[0], 'a.txt', 'right file name';
 }
 
-# test2
+# test2: basic once more
 {
     sleep(1);
     system(catdir(dirname(__FILE__), "../backup.sh $basedir $targetdir"));
     
     my @files = files($basedir);
     is(scalar @files, 12, 'right amount of files');
+    my @files2 = files(catdir($basedir, $files[-1]));
+    is $files2[0], 'backup.log', 'right file name';
+    is $files2[1], 'bkt', 'right directory name';
+    my @files3 = files(catdir($basedir, $files[-1], $files2[1]));
+    is(scalar @files3, 1, 'right amount of files');
+    is $files3[0], 'a.txt', 'right file name';
+}
+
+# test3: with option
+{
+    sleep(1);
+    system(catdir(dirname(__FILE__), "../backup.sh -d 5 $basedir $targetdir"));
+    
+    my @files = files($basedir);
+    is(scalar @files, 8, 'right amount of files');
+    my @files2 = files(catdir($basedir, $files[-1]));
+    is $files2[0], 'backup.log', 'right file name';
+    is $files2[1], 'bkt', 'right directory name';
+    my @files3 = files(catdir($basedir, $files[-1], $files2[1]));
+    is(scalar @files3, 1, 'right amount of files');
+    is $files3[0], 'a.txt', 'right file name';
+}
+
+# test3: with option once more
+{
+    sleep(1);
+    system(catdir(dirname(__FILE__), "../backup.sh -d 5 $basedir $targetdir"));
+    
+    my @files = files($basedir);
+    is(scalar @files, 9, 'right amount of files');
     my @files2 = files(catdir($basedir, $files[-1]));
     is $files2[0], 'backup.log', 'right file name';
     is $files2[1], 'bkt', 'right directory name';
