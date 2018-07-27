@@ -6,10 +6,11 @@
 # Remove older backups than 10 dayes
 # backup.sh -d 10 /backup/content /var/www1 /var/www2
 
-while getopts d: OPT
+while getopts d:m: OPT
 do
     case $OPT in
         "d" ) days=$OPTARG ;;
+        "m" ) months=$OPTARG ;;
     esac
 done
 
@@ -30,8 +31,13 @@ LOGFILE=$TEMPDIR/backup.log;
 touch $LOGFILE
 echo "`date` backup start" >> $LOGFILE
 
+if [ ! -z "$months" ]; then
+    mkdir -p $BACKUPDIR/monthly
+    find $BACKUPDIR/* -maxdepth 0 -type d -mtime +$days -regex '/[0-9]{8}T[0-9]{6}$' -exec mv {} $BACKUPDIR/montly \;
+fi
+
 if [ ! -z "$days" ]; then
-    find $BACKUPDIR/* -maxdepth 0 -type d -mtime +$days | xargs rm -rf
+    find $BACKUPDIR/* -maxdepth 0 -type d -mtime +$days | grep -E '/[0-9]{8}T[0-9]{6}$' | xargs rm -rf
 fi
 
 rsync -av --delete --link-dest=../$LASTBACKUP $TARGETS $TEMPDIR >> $LOGFILE 2>&1

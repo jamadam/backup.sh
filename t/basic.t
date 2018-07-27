@@ -24,7 +24,7 @@ my $targetdir = catdir(dirname(__FILE__), 'bkt');
 # 3:00 AM today
 my $ts = timelocal(0, 0, 3, (localtime(time()))[3..5]);
 
-foreach (1..10) {
+foreach (1..100) {
     $ts -= 86400;
     my $f = catdir($basedir, format_date(localtime($ts)));
     mkdir($f);
@@ -38,7 +38,7 @@ foreach (1..10) {
     system(catdir(dirname(__FILE__), "../backup.sh $basedir $targetdir"));
     
     my @files = files($basedir);
-    is(scalar @files, 11, 'right amount of files');
+    is(scalar @files, 101, 'right amount of files');
     my @files2 = files(catdir($basedir, $files[-1]));
     is(scalar @files2, 2, 'right amount of files');
     is $files2[0], 'backup.log', 'right file name';
@@ -54,7 +54,7 @@ foreach (1..10) {
     system(catdir(dirname(__FILE__), "../backup.sh $basedir $targetdir"));
     
     my @files = files($basedir);
-    is(scalar @files, 12, 'right amount of files');
+    is(scalar @files, 102, 'right amount of files');
     my @files2 = files(catdir($basedir, $files[-1]));
     is $files2[0], 'backup.log', 'right file name';
     is $files2[1], 'bkt', 'right directory name';
@@ -63,7 +63,23 @@ foreach (1..10) {
     is $files3[0], 'a.txt', 'right file name';
 }
 
-# test3: with option
+# test3: with monthly option
+{
+    sleep(1);
+    system(catdir(dirname(__FILE__), "../backup.sh -m 5 $basedir $targetdir"));
+    
+    my @files = files($basedir);
+    is(scalar @files, 8, 'right amount of files');
+    my @files2 = files(catdir($basedir, $files[-1]));
+    is $files2[0], 'backup.log', 'right file name';
+    is $files2[1], 'bkt', 'right directory name';
+    my @files3 = files(catdir($basedir, $files[-1], $files2[1]));
+    is(scalar @files3, 1, 'right amount of files');
+    is $files3[0], 'a.txt', 'right file name';
+}
+<>;
+
+# test3: with daily option
 {
     sleep(1);
     system(catdir(dirname(__FILE__), "../backup.sh -d 5 $basedir $targetdir"));
@@ -94,8 +110,10 @@ foreach (1..10) {
 }
 
 # cleanup
-rmtree($basedir);
-rmtree($targetdir);
+END {
+    rmtree($basedir);
+    rmtree($targetdir);
+}
 
 sub files {
     my $dir = shift;
