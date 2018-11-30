@@ -106,7 +106,7 @@ sub files {
 }
 
 sub format_date {
-    my ($s, $m, $h, $md, $mon, $y) = localtime($ts);
+    my ($s, $m, $h, $md, $mon, $y) = @_;
     return sprintf(
             "%04d%02d%02dT%02d%02d%02d", $y + 1900, $mon + 1, $md, $h, $m, $s);
 }
