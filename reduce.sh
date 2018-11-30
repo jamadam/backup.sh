@@ -29,16 +29,16 @@ do
     mtime=$(stat -f "%m" $entry 2> /dev/null) || mtime=$(stat -c %Y $entry)
     diff=$(($TODAY - $mtime))
     if [ -n "$months" ]; then
-    if (($diff > $((60 * 60 * 24 * 31 * $months)))); then
-        rm -rf "$entry"
-    fi
+        if (($diff > $((60 * 60 * 24 * 31 * $months)))); then
+            rm -rf "$entry"
+        fi
     fi
     if [ -n "$days" ]; then
-    if ((diff > $((60 * 60 * 24 * ($days + 1))))); then
-        if [[ $base =~ [0-9][0-9][0-9][0-9][0-9][0-9]01T ]]; then
-            continue
+        if ((diff > $((60 * 60 * 24 * ($days + 1))))); then
+            if [[ $base =~ [0-9][0-9][0-9][0-9][0-9][0-9]01T ]]; then
+                continue
+            fi
+            rm -rf "$entry"
         fi
-        rm -rf "$entry"
-    fi
     fi
 done
