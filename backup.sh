@@ -55,8 +55,8 @@ if [ -n "$days" ]; then
 fi
 
 months_param=""
-if [ -n "$days" ]; then
-    months_param="-m $days"
+if [ -n "$months" ]; then
+    months_param="-m $months"
 fi
 
 $SCRIPTPATH/reduce.sh $days_param $months_param $BACKUPDIR
